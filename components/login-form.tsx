@@ -10,7 +10,7 @@ export function LoginForm() {
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(search.get("error") ?? "");
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -23,13 +23,18 @@ export function LoginForm() {
 
     if (mode === "signup") {
       const { data, error: signError } = await supabase.auth.signUp({
-        email, password, options: { data: { full_name: fullName } },
+        email,
+        password,
+        options: {
+          data: { full_name: fullName },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
       });
       if (signError) setError(signError.message);
       else if (data.session) {
         router.replace("/setup"); router.refresh();
       } else {
-        setMessage("Account creato. Controlla l'email per confermare l'accesso, poi effettua il login.");
+        setMessage("Account creato. Controlla l'email di conferma; dopo il link potrai accedere all'app.");
         setMode("login");
       }
     } else {
@@ -61,7 +66,7 @@ export function LoginForm() {
         {message && <div className="alert success">{message}</div>}
         <button className="btn primary wide" disabled={busy}>{busy ? "Attendi…" : mode === "login" ? "Accedi" : "Crea account"}</button>
       </form>
-      <p className="microcopy">Accesso protetto con Supabase Auth. I dati aziendali sono separati tramite Row Level Security.</p>
+      <p className="microcopy">Accesso protetto con Supabase Auth. I dati aziendali sono separati tramite Row Level Security; gli account nuovi entrano come OPERATOR finché un ADMIN non assegna permessi.</p>
     </div>
   );
 }

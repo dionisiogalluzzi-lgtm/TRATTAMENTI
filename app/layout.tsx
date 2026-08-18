@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./extras.css";
 
 export const metadata: Metadata = {
   title: { default: "AGRIGAL · Quaderno di campagna", template: "%s · AGRIGAL" },

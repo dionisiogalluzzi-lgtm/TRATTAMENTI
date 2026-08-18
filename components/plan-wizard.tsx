@@ -63,6 +63,8 @@ export function PlanWizard({ fields, products, operators, equipment, userId }: {
 
     const { error: requirementError } = await supabase.rpc("refresh_plan_requirements", { p_plan_id: plan.id });
     if (requirementError) { setError(requirementError.message); setBusy(false); return; }
+    const { error: complianceError } = await supabase.rpc("refresh_plan_compliance", { p_plan_id: plan.id });
+    if (complianceError) { setError(complianceError.message); setBusy(false); return; }
     router.push(`/trattamenti/${plan.id}`); router.refresh();
   }
 
@@ -87,6 +89,6 @@ export function PlanWizard({ fields, products, operators, equipment, userId }: {
       <div className="product-picker">{products.map(p=>{const on=selectedProducts.includes(p.id);return <div className={`product-row ${on?"selected":""}`} key={p.id}><label className="product-check"><input type="checkbox" checked={on} onChange={()=>toggle(selectedProducts,setSelectedProducts,p.id)} /><strong>{p.name}</strong></label>{on&&<div className="dose-fields"><input name={`dose_${p.id}`} type="number" min="0.00001" step="0.00001" placeholder="Dose" required /><select name={`basis_${p.id}`}><option value="PER_HA">per ha</option><option value="PER_HL">per 100 L</option></select><input name={`dose_unit_${p.id}`} defaultValue={p.unit} aria-label="Unità dose" /></div>}</div>})}</div>
     </section>
     {error && <div className="alert error">{error}</div>}
-    <div className="sticky-actions"><span>Il sistema calcolerà fabbisogni, disponibilità e quantità da acquistare per ogni azienda.</span><button className="btn primary" disabled={busy}>{busy?"Calcolo…":"Crea piano e calcola fabbisogni"}</button></div>
+    <div className="sticky-actions"><span>Calcolo automatico di fabbisogni/scorte + controlli su coltura, dose, intervallo, numero applicazioni e carenza in base alle etichette censite.</span><button className="btn primary" disabled={busy}>{busy?"Controllo…":"Crea piano e verifica"}</button></div>
   </form>;
 }
