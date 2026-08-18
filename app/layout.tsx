@@ -2,18 +2,10 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "TRATTAMENTI",
-  description: "Gestionale agricolo per trattamenti, magazzino e costi",
+  title: { default: "AGRIGAL · Quaderno di campagna", template: "%s · AGRIGAL" },
+  description: "Gestione agricola multiazienda, trattamenti, magazzino e quaderno digitale.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="it">
-      <body>{children}</body>
-    </html>
-  );
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return <html lang="it"><body>{children}</body></html>;
 }
