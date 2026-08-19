@@ -27,6 +27,7 @@ This file mirrors the migration history currently applied to the connected Supab
 | 20260819055440 | `recognize_all_current_ministerial_authorization_statuses` |
 | 20260819055536 | `move_pg_trgm_to_extensions_schema` |
 | 20260819055636 | `prevent_invalid_ministerial_products_from_becoming_active` |
+| 20260819154436 | `auditable_compliance_overrides_and_product_cleanup` |
 
 ## Ministry of Health phytosanitary catalog
 
@@ -38,6 +39,15 @@ This file mirrors the migration history currently applied to the connected Supab
 - A weekly job `weekly-ministry-fitosanitari-sync` is active at `15 4 * * 2` (Tuesday 04:15 UTC).
 - The synchronization secret is stored in Supabase Vault and is not committed to the repository.
 - Full structured label-use rules are not inferred from the Open Data catalog; those remain versioned/verified separately in `product_labels` and `product_crop_rules`.
+
+## Compliance overrides and QDCA audit
+
+- ADMIN can explicitly force a treatment whose current label checks contain `BLOCKING` findings, but only with a recorded reason.
+- The override is tied to a deterministic signature of the current blocking checks, so a materially changed set of checks invalidates the previous authorization.
+- At execution start, compliance findings are snapshotted into `treatment_execution_compliance_issues` and never inferred retroactively from mutable master data.
+- `v_qdca_records` includes all completed real uses and exposes `CONFORME` / `NON_CONFORME`, issue codes/messages and the override reason.
+- A filtered conforming view can be produced by the UI/export, but it is explicitly treated as an internal view and not as a substitute for the complete record of actual use.
+- Catalog products can be deleted only while unused; products already referenced by operational history are archived (`active=false`) instead of being physically deleted.
 
 ## Verification state
 
