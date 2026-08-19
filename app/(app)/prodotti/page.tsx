@@ -1,4 +1,5 @@
-import { createLabelRuleAction, createProductAction } from "@/app/actions";
+import { createProductAction } from "@/app/actions";
+import { createVerifiedLabelRuleAction } from "@/app/label-actions";
 import { deleteProductAction, updateProductSafetyDataAction } from "@/app/product-actions";
 import { Feedback, PageHeader, EmptyState } from "@/components/app-shell";
 import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
@@ -14,7 +15,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
   const { supabase, profile } = await requireProfile();
   const params = await searchParams;
   const [productsResult, cropsResult, syncResult] = await Promise.all([
-    supabase.from("products").select("*,product_labels(id,version_name,valid_from,product_crop_rules(id,adversity,dose_max_per_ha,dose_max_per_hl,dose_unit,max_applications,preharvest_interval_days,crops(name)))").eq("active", true).order("commercial_name"),
+    supabase.from("products").select("*,product_labels(id,version_name,valid_from,product_crop_rules(id,adversity,dose_max_per_ha,dose_max_per_hl,dose_unit,max_applications,max_applications_scope,preharvest_interval_days,crops(name)))").eq("active", true).order("commercial_name"),
     supabase.from("crops").select("id,name").eq("active", true).order("name"),
     profile.role === "ADMIN"
       ? supabase.from("ministry_catalog_sync_runs").select("status,completed_at,source_dataset_date,rows_received,rows_upserted,error_message").order("started_at", { ascending: false }).limit(1)
@@ -55,7 +56,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
             <td><strong>{p.commercial_name}</strong><span className="muted">{[p.authorization_holder, p.formulation].filter(Boolean).join(" · ")}</span></td>
             <td>{p.authorization_number ? <><strong>Reg. {p.authorization_number}</strong>{p.ministerial_registration_number && <span className={p.active ? "badge success" : "badge danger"} style={{ marginTop: 5 }}>{p.official_status || "MINISTERO"}</span>}{p.official_authorization_expiry_date && <span className="muted">Scadenza {fmtDate(p.official_authorization_expiry_date)}</span>}</> : <span className="muted">Non ministeriale</span>}</td>
             <td>{p.base_unit}</td>
-            <td>{rules.length ? rules.slice(0, 3).map((r: any) => <div key={r.id}><strong>{r.crops?.name ?? "Coltura"}</strong> {r.adversity && `· ${r.adversity}`} · carenza {r.preharvest_interval_days ?? "—"} gg{r.max_applications != null ? ` · max ${r.max_applications} appl.` : ""}</div>) : <span className="muted">Regole etichetta da censire/verificare</span>}</td>
+            <td>{rules.length ? rules.slice(0, 3).map((r: any) => <div key={r.id}><strong>{r.crops?.name ?? "Coltura"}</strong> {r.adversity && `· ${r.adversity}`} · carenza {r.preharvest_interval_days ?? "—"} gg{r.max_applications != null ? ` · max ${r.max_applications} appl. / ${r.max_applications_scope === "CALENDAR_YEAR" ? "anno" : "ciclo"}` : ""}</div>) : <span className="muted">Regole etichetta da censire/verificare</span>}</td>
             <td>
               <div className="actions-row">
                 {labelUrl ? <a className="btn small" href={labelUrl} target="_blank" rel="noreferrer">📄 {p.category === "FITOSANITARIO" && registration ? "Etichetta ufficiale SIAN" : "Etichetta"}</a> : <span className="muted">Etichetta —</span>}
@@ -80,15 +81,16 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
         </form>
       </section>
       <section className="panel"><div className="section-head"><div><p className="eyebrow">ETICHETTA FITOSANITARIA</p><h2>Regola verificata per coltura</h2></div></div>
-        {fitoProducts.length ? <form action={createLabelRuleAction} className="form-grid cols-2">
+        {fitoProducts.length ? <form action={createVerifiedLabelRuleAction} className="form-grid cols-2">
           <label className="span-2">Prodotto<select name="product_id" required>{fitoProducts.map((p: any) => <option key={p.id} value={p.id}>{p.commercial_name} · Reg. {p.authorization_number || "—"}</option>)}</select></label>
           <label>Versione etichetta<input name="version_name" /></label><label>Valida dal<input type="date" name="valid_from" /></label>
           <label>Coltura<select name="crop_id"><option value="">Seleziona</option>{crops.map((c: any) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></label><label>Avversità<input name="adversity" /></label>
           <label>Dose min / ha<input name="dose_min_per_ha" type="number" step="0.00001" /></label><label>Dose max / ha<input name="dose_max_per_ha" type="number" step="0.00001" /></label>
           <label>Dose min / 100 L<input name="dose_min_per_hl" type="number" step="0.00001" /></label><label>Dose max / 100 L<input name="dose_max_per_hl" type="number" step="0.00001" /></label>
-          <label>Unità dose<input name="dose_unit" placeholder="L, KG, ml…" /></label><label>Max applicazioni<input name="max_applications" type="number" /></label>
-          <label>Intervallo minimo gg<input name="min_interval_days" type="number" /></label><label>Carenza gg<input name="preharvest_interval_days" type="number" /></label><label>Rientro ore<input name="reentry_interval_hours" type="number" /></label>
-          <label className="span-2">URL etichetta/fonte ufficiale<input name="source_url" type="url" /></label><label className="span-2">Restrizioni / note<input name="restrictions" /></label>
+          <label>Unità dose<input name="dose_unit" placeholder="L, KG, ml…" /></label><label>Max applicazioni<input name="max_applications" type="number" min="1" /></label>
+          <label>Periodo limite applicazioni<select name="max_applications_scope" defaultValue="CROP_CYCLE"><option value="CROP_CYCLE">Ciclo colturale</option><option value="CALENDAR_YEAR">Anno solare</option></select></label><label>Intervallo minimo gg<input name="min_interval_days" type="number" /></label>
+          <label>Carenza gg<input name="preharvest_interval_days" type="number" /></label><label>Rientro ore<input name="reentry_interval_hours" type="number" /></label>
+          <label className="span-2">URL etichetta/fonte ufficiale<input name="source_url" type="url" /></label><label className="span-2">Restrizioni / note<input name="restrictions" placeholder="Riporta eventuali condizioni particolari dell'etichetta" /></label>
           <button className="btn primary span-2">Registra etichetta e regola verificata</button>
         </form> : <div className="alert info">Aggiungi prima almeno un fitosanitario dal catalogo ufficiale.</div>}
       </section>
