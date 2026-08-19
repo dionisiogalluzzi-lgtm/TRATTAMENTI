@@ -28,6 +28,10 @@ function isRevoked(row: Result) {
   return Boolean(row.revocation_effective_date) || (row.administrative_status ?? "").toLowerCase().includes("revocat");
 }
 
+function labelHref(registration: string) {
+  return `/api/ministry/label?registration=${encodeURIComponent(registration)}`;
+}
+
 function ProductCard({
   row,
   isAdmin,
@@ -75,16 +79,17 @@ function ProductCard({
     </div>
     {row.active_substances && <p className="muted" style={{margin:"10px 0 0"}}><strong>Sostanze attive:</strong> {row.active_substances}</p>}
     {row.revocation_effective_date && <div className="alert error" style={{marginTop:10,marginBottom:0}}>Revoca con decorrenza {dateIt(row.revocation_effective_date)}</div>}
-    {isAdmin && <div className="actions-row" style={{marginTop:12}}>
-      {row.added_to_farm_catalog ? <span className="badge success">GIÀ AGGIUNTO</span> : revoked ?
+    <div className="actions-row" style={{marginTop:12}}>
+      <a className="btn" href={labelHref(row.registration_number)} target="_blank" rel="noreferrer">📄 Etichetta ufficiale Ministero</a>
+      {isAdmin && (row.added_to_farm_catalog ? <span className="badge success">GIÀ AGGIUNTO</span> : revoked ?
         <span className="badge danger">NON AGGIUNGIBILE · PRODOTTO REVOCATO</span> : !row.authorization_currently_valid ?
         <span className="badge warning">NON AGGIUNGIBILE FINCHÉ NON VERIFICATO</span> : <>
           <select value={unit} onChange={(e) => onUnitChange(e.target.value)} style={{maxWidth:120}} aria-label="Unità base">
             <option value="L">L</option><option value="KG">KG</option><option value="G">G</option><option value="ML">ML</option><option value="UNITA">UNITÀ</option>
           </select>
           <button type="button" className="btn primary" disabled={adding === row.registration_number} onClick={onAdd}>{adding === row.registration_number ? "Aggiungo…" : "Aggiungi ai prodotti aziendali"}</button>
-        </>}
-    </div>}
+        </>)}
+    </div>
   </div>;
 }
 
@@ -146,7 +151,7 @@ export function MinisterialCatalogSearch({ isAdmin }: { isAdmin: boolean }) {
     <label>Cerca per nome, numero di registrazione o sostanza attiva
       <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="es. Radar 10 EC, rame, 16032…" autoComplete="off" />
     </label>
-    <p className="muted" style={{margin:0}}>I prodotti non revocati sono mostrati per primi; tra questi, quelli con autorizzazione attualmente valida hanno priorità. I prodotti revocati con nome simile sono separati in fondo.</p>
+    <p className="muted" style={{margin:0}}>I prodotti non revocati sono mostrati per primi; tra questi, quelli con autorizzazione attualmente valida hanno priorità. L'etichetta viene richiamata al momento dal servizio ufficiale del Ministero usando il numero di registrazione.</p>
     {busy && <div className="alert info">Ricerca nel catalogo ufficiale…</div>}
     {error && <div className="alert error">{error}</div>}
 
@@ -173,7 +178,7 @@ export function MinisterialCatalogSearch({ isAdmin }: { isAdmin: boolean }) {
         <div><p className="eyebrow" style={{marginBottom:4}}>STORICO / NOMI SIMILI</p><h3 style={{margin:0}}>Prodotti revocati</h3></div>
         <span className="badge danger">{revoked.length} REVOCATI</span>
       </div>
-      <div className="alert info" style={{marginBottom:0}}>Questi risultati restano visibili per evitare confusione con formulati omonimi o versioni storiche, ma non possono essere aggiunti ai prodotti aziendali.</div>
+      <div className="alert info" style={{marginBottom:0}}>Questi risultati restano visibili per evitare confusione con formulati omonimi o versioni storiche. L'ultima etichetta disponibile può comunque essere consultata per finalità storiche.</div>
       <div className="list">
         {revoked.map((row) => <ProductCard
           key={row.registration_number}
