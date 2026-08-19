@@ -13,7 +13,10 @@ a,button{touch-action:manipulation}
 .brand-mark-image{width:54px;height:54px;object-fit:contain;border-radius:15px;flex:0 0 auto}
 .icon-btn,.btn{min-height:42px}
 .mobile-header-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.pwa-install-wrap{position:relative;display:flex;align-items:center}
 .pwa-install-button{border:1px solid #9bcc51;background:#a8d95b;color:#112317;border-radius:999px;min-height:36px;padding:7px 11px;font-size:11px;font-weight:800;white-space:nowrap}
+.pwa-install-help{position:fixed;z-index:100;top:calc(66px + env(safe-area-inset-top));left:12px;right:12px;background:#fff;color:#172019;border:1px solid #cbd8c7;border-radius:14px;padding:14px 42px 14px 14px;box-shadow:0 12px 30px #07150d33;font-size:12px;line-height:1.45}
+.pwa-install-help strong,.pwa-install-help span{display:block}.pwa-install-help strong{margin-bottom:4px;color:#173f29}.pwa-install-help button{position:absolute;right:9px;top:7px;border:0;background:transparent;font-size:24px;line-height:28px;color:#617065;padding:2px 7px}
 
 @media(max-width:760px){
   body{overflow-x:hidden}
