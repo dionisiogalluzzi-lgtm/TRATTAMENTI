@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { signOutAction } from "@/app/actions";
@@ -19,16 +20,45 @@ const nav = [
   ["/impostazioni", "⚙", "Impostazioni"],
 ] as const;
 
+function AgrigalIcon({ mobile = false }: { mobile?: boolean }) {
+  return (
+    <Image
+      src="/agrigal-icon.png"
+      alt=""
+      width={mobile ? 40 : 44}
+      height={mobile ? 40 : 44}
+      priority
+      className={mobile ? "brand-icon mobile" : "brand-icon"}
+    />
+  );
+}
+
 export function AppShell({ profile, children }: { profile: AppProfile; children: ReactNode }) {
   return <div className="app-frame">
     <aside className="sidebar">
-      <Link href="/dashboard" className="logo"><span className="logo-mark">A</span><span><strong>AGRIGAL</strong><small>Farm OS</small></span></Link>
-      <nav>{nav.map(([href,icon,label])=><Link key={href} href={href}><span>{icon}</span>{label}</Link>)}</nav>
-      <div className="sidebar-user"><div><strong>{profile.full_name || "Utente"}</strong><span className={profile.role === "ADMIN" ? "role admin" : "role"}>{profile.role}</span></div><form action={signOutAction}><button className="icon-btn" title="Esci">↪</button></form></div>
+      <Link href="/dashboard" className="logo brand-button" aria-label="Vai alla Dashboard AGRIGAL">
+        <AgrigalIcon />
+        <span className="brand-copy"><strong>AGRIGAL</strong><small>Farm OS</small></span>
+      </Link>
+      <nav>{nav.map(([href,icon,label])=><Link key={href} href={href}>
+        {href === "/dashboard"
+          ? <Image src="/agrigal-icon.png" alt="" width={24} height={24} className="nav-brand-icon" />
+          : <span>{icon}</span>}
+        {label}
+      </Link>)}</nav>
+      <div className="sidebar-user"><div><strong>{profile.full_name || "Utente"}</strong><span className={profile.role === "ADMIN" ? "role admin" : "role"}>{profile.role}</span></div><form action={signOutAction}><button className="icon-btn" title="Esci" aria-label="Esci">↪</button></form></div>
     </aside>
     <div className="main-column">
-      <header className="mobile-header"><Link href="/dashboard" className="logo"><span className="logo-mark">A</span><strong>AGRIGAL</strong></Link><span className={profile.role === "ADMIN" ? "role admin" : "role"}>{profile.role}</span></header>
-      <div className="mobile-nav">{nav.slice(0,10).map(([href,icon,label])=><Link key={href} href={href}><span>{icon}</span><small>{label}</small></Link>)}</div>
+      <header className="mobile-header">
+        <Link href="/dashboard" className="logo brand-button" aria-label="Vai alla Dashboard AGRIGAL"><AgrigalIcon mobile /><strong>AGRIGAL</strong></Link>
+        <span className={profile.role === "ADMIN" ? "role admin" : "role"}>{profile.role}</span>
+      </header>
+      <div className="mobile-nav" aria-label="Navigazione principale">{nav.slice(0,10).map(([href,icon,label])=><Link key={href} href={href}>
+        {href === "/dashboard"
+          ? <Image src="/agrigal-icon.png" alt="" width={30} height={30} className="mobile-dashboard-icon" />
+          : <span>{icon}</span>}
+        <small>{label}</small>
+      </Link>)}</div>
       <main className="content">{children}</main>
     </div>
   </div>;
