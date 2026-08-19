@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { FormEvent, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
@@ -52,7 +51,7 @@ export function LoginForm() {
   return (
     <div className="auth-card">
       <div className="auth-brand">
-        <Image src="/agrigal-icon.png" alt="AGRIGAL" width={54} height={54} className="brand-mark-image" priority />
+        <img src="/agrigal-icon-192.png" alt="AGRIGAL" width="54" height="54" className="brand-mark-image" loading="eager" />
         <div><strong>AGRIGAL</strong><span>Quaderno di campagna</span></div>
       </div>
       <div className="auth-tabs">
