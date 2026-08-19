@@ -4,6 +4,10 @@ import { MinisterialCatalogSearch } from "@/components/ministerial-catalog-searc
 import { requireProfile } from "@/lib/auth";
 import { fmtDate, fmtDateTime } from "@/lib/utils";
 
+function officialLabelHref(registration: string) {
+  return `/api/ministry/label?registration=${encodeURIComponent(registration)}`;
+}
+
 export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ ok?: string; error?: string }> }) {
   const { supabase, profile } = await requireProfile();
   const params = await searchParams;
@@ -20,7 +24,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
   const fitoProducts = products.filter((p: any) => p.category === "FITOSANITARIO");
 
   return <>
-    <PageHeader eyebrow="FITOSANITARI" title="Prodotti ed etichette" description="I fitosanitari arrivano dal catalogo ufficiale del Ministero della Salute. AGRIGAL sincronizza stato amministrativo e scadenza dell'autorizzazione; le regole d'impiego dell'etichetta restano versionate nello storico aziendale." />
+    <PageHeader eyebrow="FITOSANITARI" title="Prodotti ed etichette" description="I fitosanitari arrivano dal catalogo ufficiale del Ministero della Salute. AGRIGAL sincronizza stato amministrativo e scadenza dell'autorizzazione e richiama dinamicamente l'ultima etichetta ufficiale disponibile tramite il numero di registrazione." />
     <Feedback ok={params.ok} error={params.error} />
 
     <section className="panel" style={{ marginBottom: 18 }}>
@@ -34,20 +38,22 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
       {lastSync?.status === "ERROR" && <div className="alert error">Ultima sincronizzazione non riuscita: {lastSync.error_message}</div>}
       {!lastSync && profile.role === "ADMIN" && <div className="alert info">Il catalogo ministeriale è in fase di prima sincronizzazione.</div>}
       <MinisterialCatalogSearch isAdmin={profile.role === "ADMIN"} />
-      <p className="microcopy">Fonte: Open Data del Ministero della Salute, dataset Fitosanitari. AGRIGAL importa i dati ufficiali e conserva la data dell'ultimo aggiornamento.</p>
+      <p className="microcopy">Fonte: Open Data e Banca dati dei prodotti fitosanitari del Ministero della Salute. AGRIGAL usa il numero di registrazione come identificativo normativo e risolve l'etichetta al momento della consultazione.</p>
     </section>
 
     <section className="panel" style={{ marginBottom: 18 }}>
       <div className="section-head"><div><p className="eyebrow">CATALOGO AZIENDALE</p><h2>{products.length} prodotti disponibili in AGRIGAL</h2></div></div>
-      {products.length ? <div className="table-wrap"><table><thead><tr><th>Prodotto</th><th>Autorizzazione / stato</th><th>Unità</th><th>Etichette / regole</th></tr></thead><tbody>
+      {products.length ? <div className="table-wrap"><table><thead><tr><th>Prodotto</th><th>Autorizzazione / stato</th><th>Unità</th><th>Etichette / regole</th><th>Documento ufficiale</th></tr></thead><tbody>
         {products.map((p: any) => {
           const labels = p.product_labels ?? [];
           const rules = labels.flatMap((l: any) => l.product_crop_rules ?? []);
+          const registration = p.ministerial_registration_number || p.authorization_number;
           return <tr key={p.id}>
             <td><strong>{p.commercial_name}</strong><span className="muted">{[p.authorization_holder, p.formulation].filter(Boolean).join(" · ")}</span></td>
             <td>{p.authorization_number ? <><strong>Reg. {p.authorization_number}</strong>{p.ministerial_registration_number && <span className={p.active ? "badge success" : "badge danger"} style={{ marginTop: 5 }}>{p.official_status || "MINISTERO"}</span>}{p.official_authorization_expiry_date && <span className="muted">Scadenza {fmtDate(p.official_authorization_expiry_date)}</span>}</> : <span className="muted">Non ministeriale</span>}</td>
             <td>{p.base_unit}</td>
             <td>{rules.length ? rules.slice(0, 3).map((r: any) => <div key={r.id}><strong>{r.crops?.name ?? "Coltura"}</strong> {r.adversity && `· ${r.adversity}`} · carenza {r.preharvest_interval_days ?? "—"} gg</div>) : <span className="muted">Regole etichetta da censire/verificare</span>}</td>
+            <td>{p.category === "FITOSANITARIO" && registration ? <a className="btn small" href={officialLabelHref(registration)} target="_blank" rel="noreferrer">📄 Etichetta Ministero</a> : <span className="muted">—</span>}</td>
           </tr>;
         })}
       </tbody></table></div> : <EmptyState title="Catalogo aziendale vuoto" text="Cerca sopra un fitosanitario nel catalogo del Ministero e aggiungilo con un clic." />}
