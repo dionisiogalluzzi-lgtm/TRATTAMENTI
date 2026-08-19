@@ -80,7 +80,7 @@ function ProductCard({
     {row.active_substances && <p className="muted" style={{margin:"10px 0 0"}}><strong>Sostanze attive:</strong> {row.active_substances}</p>}
     {row.revocation_effective_date && <div className="alert error" style={{marginTop:10,marginBottom:0}}>Revoca con decorrenza {dateIt(row.revocation_effective_date)}</div>}
     <div className="actions-row" style={{marginTop:12}}>
-      <a className="btn" href={labelHref(row.registration_number)} target="_blank" rel="noreferrer">📄 Etichetta ufficiale Ministero</a>
+      <a className="btn" href={labelHref(row.registration_number)} target="_blank" rel="noreferrer">📄 Etichetta ufficiale SIAN</a>
       {isAdmin && (row.added_to_farm_catalog ? <span className="badge success">GIÀ AGGIUNTO</span> : revoked ?
         <span className="badge danger">NON AGGIUNGIBILE · PRODOTTO REVOCATO</span> : !row.authorization_currently_valid ?
         <span className="badge warning">NON AGGIUNGIBILE FINCHÉ NON VERIFICATO</span> : <>
@@ -151,7 +151,7 @@ export function MinisterialCatalogSearch({ isAdmin }: { isAdmin: boolean }) {
     <label>Cerca per nome, numero di registrazione o sostanza attiva
       <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="es. Radar 10 EC, rame, 16032…" autoComplete="off" />
     </label>
-    <p className="muted" style={{margin:0}}>I prodotti non revocati sono mostrati per primi; tra questi, quelli con autorizzazione attualmente valida hanno priorità. L'etichetta viene richiamata al momento dal servizio ufficiale del Ministero usando il numero di registrazione.</p>
+    <p className="muted" style={{margin:0}}>I prodotti non revocati sono mostrati per primi; tra questi, quelli con autorizzazione attualmente valida hanno priorità. L'etichetta viene richiamata al momento dalla Banca Dati Prodotti Fitosanitari SIAN (MASAF/CREA) usando il numero di registrazione ministeriale.</p>
     {busy && <div className="alert info">Ricerca nel catalogo ufficiale…</div>}
     {error && <div className="alert error">{error}</div>}
 
