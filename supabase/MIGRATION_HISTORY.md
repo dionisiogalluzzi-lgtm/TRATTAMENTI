@@ -28,6 +28,7 @@ This file mirrors the migration history currently applied to the connected Supab
 | 20260819055536 | `move_pg_trgm_to_extensions_schema` |
 | 20260819055636 | `prevent_invalid_ministerial_products_from_becoming_active` |
 | 20260819154436 | `auditable_compliance_overrides_and_product_cleanup` |
+| 20260819154953 | `index_compliance_override_foreign_keys` |
 
 ## Ministry of Health phytosanitary catalog
 
