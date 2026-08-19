@@ -29,6 +29,7 @@ This file mirrors the migration history currently applied to the connected Supab
 | 20260819055636 | `prevent_invalid_ministerial_products_from_becoming_active` |
 | 20260819154436 | `auditable_compliance_overrides_and_product_cleanup` |
 | 20260819154953 | `index_compliance_override_foreign_keys` |
+| 20260819155313 | `scope_label_application_limits` |
 
 ## Ministry of Health phytosanitary catalog
 
@@ -49,6 +50,7 @@ This file mirrors the migration history currently applied to the connected Supab
 - `v_qdca_records` includes all completed real uses and exposes `CONFORME` / `NON_CONFORME`, issue codes/messages and the override reason.
 - A filtered conforming view can be produced by the UI/export, but it is explicitly treated as an internal view and not as a substitute for the complete record of actual use.
 - Catalog products can be deleted only while unused; products already referenced by operational history are archived (`active=false`) instead of being physically deleted.
+- Label rules can specify whether the maximum number of applications applies to the crop cycle or the calendar year. The compliance engine counts prior completed applications in that scope and checks that the product authorization is current on the planned date.
 
 ## Verification state
 
