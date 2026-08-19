@@ -24,12 +24,13 @@ export function PwaRuntime() {
 
 export function PwaInstallButton() {
   const [promptEvent, setPromptEvent] = useState<BeforeInstallPromptEvent | null>(null);
-  const [installed, setInstalled] = useState(false);
+  const [standalone, setStandalone] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
-    const standalone = window.matchMedia("(display-mode: standalone)").matches;
-    setInstalled(Boolean(window.__agrigalInstalled || standalone));
+    const media = window.matchMedia("(display-mode: standalone)");
+    const syncStandalone = () => setStandalone(media.matches);
+    syncStandalone();
     setPromptEvent(window.__agrigalInstallPrompt ?? null);
 
     const onReady = () => {
@@ -37,19 +38,21 @@ export function PwaInstallButton() {
       setShowHelp(false);
     };
     const onInstalled = () => {
-      setInstalled(true);
       setPromptEvent(null);
       setShowHelp(false);
     };
+
+    media.addEventListener?.("change", syncStandalone);
     window.addEventListener("agrigal-install-ready", onReady);
     window.addEventListener("agrigal-installed", onInstalled);
     return () => {
+      media.removeEventListener?.("change", syncStandalone);
       window.removeEventListener("agrigal-install-ready", onReady);
       window.removeEventListener("agrigal-installed", onInstalled);
     };
   }, []);
 
-  if (installed) return null;
+  if (standalone) return null;
 
   async function install() {
     const current = promptEvent ?? window.__agrigalInstallPrompt ?? null;
@@ -57,6 +60,7 @@ export function PwaInstallButton() {
       setShowHelp(true);
       return;
     }
+
     await current.prompt();
     const choice = await current.userChoice;
     if (choice.outcome === "accepted") {
@@ -68,8 +72,8 @@ export function PwaInstallButton() {
   return <div className="pwa-install-wrap">
     <button type="button" className="pwa-install-button" onClick={install} title="Installa AGRIGAL sul dispositivo">↓ Installa</button>
     {showHelp && <div className="pwa-install-help" role="status">
-      <strong>Chrome sta preparando l’installazione.</strong>
-      <span>Resta su AGRIGAL almeno 30 secondi e tocca la pagina una volta. Poi premi di nuovo “Installa”. In alternativa apri ⋮ e scegli “Installa app” se compare.</span>
+      <strong>AGRIGAL non è ancora pronta per il prompt automatico.</strong>
+      <span>Chrome richiede almeno un’interazione con la pagina e circa 30 secondi di utilizzo prima di proporre l’installazione. Tocca la pagina, attendi un momento e premi di nuovo “Installa”. Se nel menu ⋮ compare “Installa app”, puoi usare anche quello.</span>
       <button type="button" onClick={() => setShowHelp(false)} aria-label="Chiudi istruzioni">×</button>
     </div>}
   </div>;
