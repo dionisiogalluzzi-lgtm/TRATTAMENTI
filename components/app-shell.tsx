@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { signOutAction } from "@/app/actions";
@@ -20,15 +19,19 @@ const nav = [
   ["/impostazioni", "⚙", "Impostazioni"],
 ] as const;
 
+const AGRIGAL_ICON = "/agrigal-icon-192.png";
+
 function AgrigalIcon({ mobile = false }: { mobile?: boolean }) {
+  const size = mobile ? 40 : 44;
   return (
-    <Image
-      src="/agrigal-icon.png"
-      alt=""
-      width={mobile ? 40 : 44}
-      height={mobile ? 40 : 44}
-      priority
+    <img
+      src={AGRIGAL_ICON}
+      alt="AGRIGAL"
+      width={size}
+      height={size}
       className={mobile ? "brand-icon mobile" : "brand-icon"}
+      loading="eager"
+      decoding="sync"
     />
   );
 }
@@ -42,7 +45,7 @@ export function AppShell({ profile, children }: { profile: AppProfile; children:
       </Link>
       <nav>{nav.map(([href,icon,label])=><Link key={href} href={href}>
         {href === "/dashboard"
-          ? <Image src="/agrigal-icon.png" alt="" width={24} height={24} className="nav-brand-icon" />
+          ? <img src={AGRIGAL_ICON} alt="" width="24" height="24" className="nav-brand-icon" loading="eager" />
           : <span>{icon}</span>}
         {label}
       </Link>)}</nav>
@@ -55,7 +58,7 @@ export function AppShell({ profile, children }: { profile: AppProfile; children:
       </header>
       <div className="mobile-nav" aria-label="Navigazione principale">{nav.slice(0,10).map(([href,icon,label])=><Link key={href} href={href}>
         {href === "/dashboard"
-          ? <Image src="/agrigal-icon.png" alt="" width={30} height={30} className="mobile-dashboard-icon" />
+          ? <img src={AGRIGAL_ICON} alt="" width="30" height="30" className="mobile-dashboard-icon" loading="eager" />
           : <span>{icon}</span>}
         <small>{label}</small>
       </Link>)}</div>
