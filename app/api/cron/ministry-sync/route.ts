@@ -43,6 +43,27 @@ function registration(raw: Record<string, unknown>) {
   return String(raw.num_registrazione ?? "").trim();
 }
 
+function mergeOfficialText(a: unknown, b: unknown) {
+  const values = [a, b]
+    .flatMap((value) => String(value ?? "").split(/\s*[|;]\s*/))
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const unique = [...new Set(values)];
+  return unique.length ? unique.join("; ") : null;
+}
+
+function mergeOfficialRows(current: Record<string, unknown>, incoming: Record<string, unknown>) {
+  const sourceRows = Array.isArray(current.__source_rows)
+    ? [...current.__source_rows as unknown[], incoming]
+    : [current, incoming];
+  return {
+    ...current,
+    sostanze_attive: mergeOfficialText(current.sostanze_attive, incoming.sostanze_attive),
+    contenuto_per_100g_di_prodotto: mergeOfficialText(current.contenuto_per_100g_di_prodotto, incoming.contenuto_per_100g_di_prodotto),
+    __source_rows: sourceRows,
+  };
+}
+
 async function edge(secret: string, body: Record<string, unknown>) {
   const response = await fetch(EDGE_FUNCTION, {
     method: "POST",
@@ -83,7 +104,9 @@ export async function GET(request: Request) {
     const dedup = new Map<string, Record<string, unknown>>();
     for (const row of rawRows) {
       const reg = registration(row);
-      if (reg) dedup.set(reg, row);
+      if (!reg) continue;
+      const current = dedup.get(reg);
+      dedup.set(reg, current ? mergeOfficialRows(current, row) : row);
     }
     const rows = [...dedup.values()];
 
