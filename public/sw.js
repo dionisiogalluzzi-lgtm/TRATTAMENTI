@@ -1,8 +1,9 @@
-const CACHE_NAME = "agrigal-shell-v2";
+const CACHE_NAME = "agrigal-shell-v3";
 const CORE_ASSETS = [
   "/offline.html",
   "/agrigal-icon-192.png",
   "/agrigal-icon-512.png",
+  "/agrigal-icon-maskable-512.png",
   "/manifest.webmanifest",
 ];
 
