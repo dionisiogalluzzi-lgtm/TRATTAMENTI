@@ -12,6 +12,8 @@ a,button{touch-action:manipulation}
 .mobile-dashboard-icon{width:30px;height:30px;object-fit:contain;border-radius:9px}
 .brand-mark-image{width:54px;height:54px;object-fit:contain;border-radius:15px;flex:0 0 auto}
 .icon-btn,.btn{min-height:42px}
+.mobile-header-actions{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.pwa-install-button{border:1px solid #9bcc51;background:#a8d95b;color:#112317;border-radius:999px;min-height:36px;padding:7px 11px;font-size:11px;font-weight:800;white-space:nowrap}
 
 @media(max-width:760px){
   body{overflow-x:hidden}
@@ -21,7 +23,8 @@ a,button{touch-action:manipulation}
     padding-left:max(10px,env(safe-area-inset-left));
     padding-right:max(12px,env(safe-area-inset-right));
   }
-  .mobile-header .brand-button{margin:0;padding:2px 7px 2px 2px;gap:8px;min-height:44px}
+  .mobile-header .brand-button{margin:0;padding:2px 7px 2px 2px;gap:8px;min-height:44px;min-width:0}
+  .mobile-header .brand-button strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .mobile-header .brand-button:hover{background:#1b3526}
   .mobile-header .role{margin-top:0}
   .content{
@@ -41,12 +44,7 @@ a,button{touch-action:manipulation}
     scrollbar-width:none;
   }
   .mobile-nav::-webkit-scrollbar{display:none}
-  .mobile-nav a{
-    min-width:72px;
-    min-height:54px;
-    scroll-snap-align:start;
-    justify-content:center;
-  }
+  .mobile-nav a{min-width:72px;min-height:54px;scroll-snap-align:start;justify-content:center}
   .mobile-nav a:active{background:#1b3526;border-radius:9px}
   .mobile-nav a span{font-size:20px;line-height:28px}
   .mobile-nav small{font-size:9px;max-width:68px;overflow:hidden;text-overflow:ellipsis}
@@ -64,9 +62,17 @@ a,button{touch-action:manipulation}
   .sticky-actions{bottom:calc(66px + env(safe-area-inset-bottom))}
 }
 
+@media(max-width:430px){
+  .mobile-header .brand-icon.mobile{width:38px;height:38px}
+  .mobile-header .brand-button strong{font-size:15px;letter-spacing:.04em}
+  .pwa-install-button{padding:6px 9px;font-size:10px}
+}
+
 @media(max-width:390px){
   .stat-grid{grid-template-columns:1fr}
   .inline-fields{grid-template-columns:1fr}
   .header-actions{grid-template-columns:1fr}
   .content{padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right))}
+  .mobile-header-actions{gap:5px}
+  .pwa-install-button{max-width:72px;overflow:hidden;text-overflow:ellipsis}
 }
