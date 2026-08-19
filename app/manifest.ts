@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    id: "/agrigal",
+    id: "/",
     name: "AGRIGAL · Quaderno di campagna",
     short_name: "AGRIGAL",
     description: "Gestione agricola multiazienda, trattamenti, magazzino e quaderno digitale.",
@@ -13,24 +13,19 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#102419",
     orientation: "portrait-primary",
     categories: ["business", "productivity"],
+    prefer_related_applications: false,
     icons: [
       {
-        src: "/agrigal-icon-192.png?v=4",
+        src: "/agrigal-icon-192.png",
         sizes: "192x192",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "/agrigal-icon.png?v=4",
+        src: "/agrigal-icon-512.png",
         sizes: "512x512",
         type: "image/png",
         purpose: "any",
-      },
-      {
-        src: "/agrigal-icon.png?v=4",
-        sizes: "512x512",
-        type: "image/png",
-        purpose: "maskable",
       },
     ],
   };
