@@ -12,11 +12,11 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   icons: {
     icon: [
-      { url: "/agrigal-icon-192.png?v=5", sizes: "192x192", type: "image/png" },
-      { url: "/agrigal-icon.png?v=5", sizes: "512x512", type: "image/png" },
+      { url: "/agrigal-icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/agrigal-icon-512.png", sizes: "512x512", type: "image/png" },
     ],
-    shortcut: [{ url: "/agrigal-icon-192.png?v=5", sizes: "192x192", type: "image/png" }],
-    apple: [{ url: "/agrigal-icon.png?v=5", sizes: "512x512", type: "image/png" }],
+    shortcut: [{ url: "/agrigal-icon-192.png", sizes: "192x192", type: "image/png" }],
+    apple: [{ url: "/agrigal-icon-192.png", sizes: "192x192", type: "image/png" }],
   },
   appleWebApp: {
     capable: true,
