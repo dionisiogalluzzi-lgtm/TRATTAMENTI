@@ -27,15 +27,16 @@ Istruzioni operative per gli agenti che lavorano su questo repository.
 6. Una pianificazione può richiedere acquisti; conservare fabbisogno, disponibile e quantità da acquistare.
 7. L'esecuzione conserva quantità effettive e non sovrascrive i valori pianificati.
 8. Le etichette dei fitofarmaci sono versionate. Non modificare retroattivamente lo storico di un trattamento completato.
-9. Prima dell'esecuzione ricalcolare `refresh_plan_compliance`; un controllo `BLOCKING` deve impedire l'avvio.
+9. Prima dell'esecuzione ricalcolare `refresh_plan_compliance`; un controllo `BLOCKING` impedisce l'avvio salvo forzatura esplicita di un ADMIN. La forzatura deve avere motivazione, firma logica dei controlli correnti e snapshot delle anomalie nell'esecuzione; non rende il trattamento conforme all'etichetta.
 10. Se un'etichetta non è censita, l'app può segnalare `WARNING`, mai inventare dose o autorizzazione.
 11. Alla chiusura di un trattamento vengono creati scarichi di magazzino e record QDCA da snapshot storici.
 12. Non cancellare registrazioni di quaderno/magazzino per correggere un errore: usare annullamenti/rettifiche tracciate.
+13. Le viste filtrate che mostrano solo righe conformi sono strumenti interni e non devono essere presentate come sostitutive del registro integrale degli impieghi realmente effettuati.
 
 ## QDCA / interoperabilità
 
 - Mantenere in forma strutturata almeno: azienda/CUAA, data e orari, localizzazione/appezzamento, superficie trattata, coltura/EPPO, fase BBCH, prodotto, numero autorizzazione, dose, quantità, operatore, attrezzatura, meteo e intervallo di sicurezza quando disponibile.
-- `v_qdca_records` è la vista di export del registro trattamenti.
+- `v_qdca_records` è la vista di export del registro trattamenti e deve includere anche gli impieghi forzati/non conformi, con stato, anomalie e motivazione.
 - Non dichiarare conformità/certificazione SIAN né inventare endpoint. Implementare un connettore soltanto su specifiche ufficiali del canale di cooperazione applicativa.
 
 ## Sicurezza Supabase
